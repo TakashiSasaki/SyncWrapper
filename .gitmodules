@@ -1,0 +1,3 @@
+[submodule "HashWrapper"]
+	path = HashWrapper
+	url = git@github.com:TakashiSasaki/HashWrapper.git
