@@ -1,4 +1,5 @@
 var assert = require("./HashWrapper/myassert").assert;
+var SyncWrapper = require("./class").SyncWrapper;
 var x = [1,2,3];
 assert.lengthOf(x, 3);
 console.log("test finished");
@@ -14,4 +15,16 @@ for(let i in modules) {
     }
   }
 }
+
+var sw = new SyncWrapper();
+
+var testItems = [
+  {
+    _id: "id1",
+    value1: "hoge",
+    value2: "fuga",
+  }
+];
+
+sw.put(testItems);
 
