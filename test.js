@@ -1,10 +1,10 @@
 var assert = require("./HashWrapper/myassert").assert;
-var SyncWrapper = require("./class").SyncWrapper;
+
 var x = [1,2,3];
 assert.lengthOf(x, 3);
 console.log("test finished");
 
-var modules = [ "post" ];
+var modules = [ "merge" ];
 for(let i in modules) {
   let module = require("./" + modules[i]);
   for(let j in module) {
@@ -16,15 +16,54 @@ for(let i in modules) {
   }
 }
 
-var sw = new SyncWrapper();
+var theirs = {
+  items: {
+    "id1": {
+      _id: "id1",
+      value1: "hoge",
+      value2: "fuga",
+    }// id1
+  },
+  rejectedBy: {},
+  rejecting: {},
+  mergedWith: {}
+};
+var theirsStringified = JSON.stringify(theirs);
 
-var testItems = [
-  {
-    _id: "id1",
-    value1: "hoge",
-    value2: "fuga",
+var ours = {
+  items: {
+    "id1": {
+      _id: "id1",
+      value1: "hoge",
+      value2: "fuga",
+    }// id1
+  },
+  rejectedBy: {},
+  rejecting: {},
+  mergedWith: {}
+};
+var oursStringified = JSON.stringify(ours);
+
+function rejectingMerger(theirItem, ourItem, mergedItem) {
+  assert.isObject(theirItem);
+  assert.isObject(ourItem);
+  assert.isObject(mergedItem);
+  assert.strictEqual(theirItem["_id"], ourItem["_id"]);
+  return -1;
+}//function rejectingMerger
+
+merge(JSON.parse(theirsStringified), JSON.parse(oursStringified), rejectingMerger);
+
+function submissiveMerger(theirItem, ourItem, mergedItem) {
+  assert.isObject(theirItem);
+  assert.isObject(ourItem);
+  assert.isObject(mergedItem);
+  assert.strictEqual(theirItem["_id"], ourItem["_id"]);
+  for(var i in Object.keys(theirItem)) {
+    mergedItem[Object.keys(theirItem)[i]] = theirItem[Object.keys(theirItem)[i]];
   }
-];
+  return 1;
+}//function rejectingMerger
 
-sw.put(testItems);
+merge(JSON.parse(theirsStringified), JSON.parse(oursStringified), submissiveMerger);
 
