@@ -1,7 +1,7 @@
 .PHONY: prepare test
 
 test:
-	NODE_PATH=HashWrapper node test.js
+	@NODE_PATH=HashWrapper node test.js
 
 prepare:
 	sudo n stable; \
