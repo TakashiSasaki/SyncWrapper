@@ -9,8 +9,6 @@ for(let i in modules) {
   let module = require("./" + modules[i]);
   for(let j in module) {
     if(typeof module[j] === "function") {
-      console.log(j);
-      console.log(module[j]);
       global[j] = module[j];
     }
   }
@@ -28,6 +26,7 @@ var theirs = {
   rejecting: {},
   mergedInto: {}
 };
+Object.preventExtensions(theirs);
 var theirsStringified = JSON.stringify(theirs);
 
 var ours = {
@@ -47,6 +46,7 @@ var ours = {
   rejecting: {},
   mergedInto: {}
 };
+Object.preventExtensions(ours);
 var oursStringified = JSON.stringify(ours);
 
 function rejectingMerger(theirItem, ourItem, mergedItem) {
@@ -60,8 +60,8 @@ function rejectingMerger(theirItem, ourItem, mergedItem) {
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
 mergeTheirsToOurs(theirs, ours, rejectingMerger);
-console.log("ours = " + JSON.stringify(ours));
-console.log("theirs = " + JSON.stringify(theirs));
+assert.deepStrictEqual(ours, JSON.parse('{"items":{"id1":{"_id":"id1","value1":"our hoge","value2":"our fuga"},"id2":{"_id":"id2","value1":"hoge","value2":"fuga"}},"rejectedBy":{},"rejecting":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"}},"mergedInto":{}}'));
+assert.deepStrictEqual(theirs, JSON.parse('{"items":{},"rejectedBy":{"id1":{"_id":"id1","value1":"our hoge","value2":"our fuga"}},"rejecting":{},"mergedInto":{}}'));
 
 function submissiveMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
@@ -72,11 +72,11 @@ function submissiveMerger(theirItem, ourItem, mergedItem) {
     mergedItem[Object.keys(theirItem)[i]] = theirItem[Object.keys(theirItem)[i]];
   }
   return 1;
-}//function rejectingMerger
+}//function submissiveMerger
 
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
 mergeTheirsToOurs(theirs, ours, submissiveMerger);
-console.log("ours = " + JSON.stringify(ours));
-console.log("theirs = " + JSON.stringify(theirs));
+assert.deepStrictEqual(theirs, JSON.parse('{"items":{},"rejectedBy":{},"rejecting":{},"mergedInto":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"}}}'));
+assert.deepStrictEqual(ours, JSON.parse('{"items":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"},"id2":{"_id":"id2","value1":"hoge","value2":"fuga"}},"rejectedBy":{},"rejecting":{},"mergedInto":{}}'));
 

@@ -25,7 +25,6 @@ function mergeTheirsToOurs(theirs, ours, merger) {
 
   for(var i in Object.keys(theirs.items)) {
     assert.isString(i);
-    console.log(i);
     const theirItem = theirs.items[Object.keys(theirs.items)[i]];
     assert.isObject(theirItem);
     assert.hasProperty(theirItem, "_id");
