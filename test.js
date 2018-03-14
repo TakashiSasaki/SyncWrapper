@@ -1,8 +1,5 @@
 var assert = require("myassert").assert;
 
-var x = [1,2,3];
-assert.lengthOf(x, 3);
-
 var modules = [ "mergeTheirsToOurs" ];
 for(let i in modules) {
   let module = require("./" + modules[i]);
@@ -33,10 +30,10 @@ var theirs = {
   },
   rejectedBy: {},
   rejecting: {},
-  mergedInto: {}
+  mergedTo: {}
 };
 Object.preventExtensions(theirs);
-var theirsStringified = JSON.stringify(theirs);
+const theirsStringified = JSON.stringify(theirs);
 
 var ours = {
   items: {
@@ -58,36 +55,40 @@ var ours = {
   },
   rejectedBy: {},
   rejecting: {},
-  mergedInto: {}
+  mergedTo: {}
 };
 Object.preventExtensions(ours);
-var oursStringified = JSON.stringify(ours);
-
-process.stderr.write("testRejectingMerger\n");
+const oursStringified = JSON.stringify(ours);
 
 function rejectingMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
   assert.isObject(ourItem);
   assert.isObject(mergedItem);
+  assert.notDeepStrictEqual(theirItem, ourItem);
   assert.strictEqual(theirItem["_id"], ourItem["_id"]);
   return -1;
 }//function rejectingMerger
 
 var theirs = JSON.parse(theirsStringified);
+assert.isObject(theirs);
 var ours = JSON.parse(oursStringified);
+assert.isObject(ours);
 mergeTheirsToOurs(theirs, ours, rejectingMerger);
-process.stderr.write("theirs: ");
 console.log(JSON.stringify(theirs));
-process.stderr.write("ours: ");
+var expectedTheirsStringified =
+'{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{}}';
 console.log(JSON.stringify(ours));
-exit();
-assert.deepStrictEqual(ours, JSON.parse('{"items":{"id1":{"_id":"id1","value1":"our hoge","value2":"our fuga"},"id2":{"_id":"id2","value1":"hoge","value2":"fuga"}},"rejectedBy":{},"rejecting":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"}},"mergedInto":{}}'));
-assert.deepStrictEqual(theirs, JSON.parse('{"items":{},"rejectedBy":{"id1":{"_id":"id1","value1":"our hoge","value2":"our fuga"}},"rejecting":{},"mergedInto":{}}'));
+var expectedOursStringified = 
+'{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{}}';
+assert.deepStrictEqual(theirs, JSON.parse(expectedTheirsStringified));
+assert.deepStrictEqual(ours, JSON.parse(expectedOursStringified));
+
 
 function submissiveMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
   assert.isObject(ourItem);
   assert.isObject(mergedItem);
+  assert.notDeepStrictEqual(theirItem, ourItem);
   assert.strictEqual(theirItem["_id"], ourItem["_id"]);
   for(var i in Object.keys(theirItem)) {
     mergedItem[Object.keys(theirItem)[i]] = theirItem[Object.keys(theirItem)[i]];
@@ -98,24 +99,37 @@ function submissiveMerger(theirItem, ourItem, mergedItem) {
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
 mergeTheirsToOurs(theirs, ours, submissiveMerger);
-assert.deepStrictEqual(theirs, JSON.parse('{"items":{},"rejectedBy":{},"rejecting":{},"mergedInto":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"}}}'));
-assert.deepStrictEqual(ours, JSON.parse('{"items":{"id1":{"_id":"id1","value1":"their hoge","value2":"their fuga"},"id2":{"_id":"id2","value1":"hoge","value2":"fuga"}},"rejectedBy":{},"rejecting":{},"mergedInto":{}}'));
+console.log(JSON.stringify(theirs));
+var expectedTheirsStringified =
+'{"items":{},"rejectedBy":{},"rejecting":{},"mergedTo":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}}}';
+assert.deepStrictEqual(theirs, JSON.parse(expectedTheirsStringified));
+console.log(JSON.stringify(ours));
+var expectedOursStringified = 
+'{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{},"mergedTo":{}}';
+assert.deepStrictEqual(ours, JSON.parse(expectedOursStringified));
 
 function defaultMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
   assert.isObject(ourItem);
   assert.isObject(mergedItem);
+  assert.notDeepStrictEqual(theirItem, ourItem);
   assert.strictEqual(theirItem["_id"], ourItem["_id"]);
   try {
     assert.deepStrictEqual(theirItem, ourItem);
     return 0;
   } catch(e) {
     return -1;
-  }
-}
+  }// try
+}//defaultMerger
 
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
 mergeTheirsToOurs(theirs, ours, defaultMerger);
-console.log("theirs = " + JSON.stringify(theirs));
-console.log("ours = " + JSON.stringify(ours));
+console.log(JSON.stringify(theirs));
+var expectedTheirsStringified = 
+'{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{}}';
+assert(theirs, JSON.parse(expectedTheirsStringified));
+console.log(JSON.stringify(ours));
+var expectedOursStringified =
+'{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{}}';
+assert(ours, JSON.parse(expectedOursStringified));

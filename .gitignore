@@ -2,3 +2,4 @@ node_modules/
 package-lock.json
 .test.js.swp
 .mergeTheirsToOurs.js.swp
+.merger.js.swp
