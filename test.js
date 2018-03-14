@@ -2,7 +2,6 @@ var assert = require("./HashWrapper/myassert").assert;
 
 var x = [1,2,3];
 assert.lengthOf(x, 3);
-console.log("test finished");
 
 var modules = [ "mergeTheirsToOurs" ];
 for(let i in modules) {
