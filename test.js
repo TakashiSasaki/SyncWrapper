@@ -4,7 +4,7 @@ var x = [1,2,3];
 assert.lengthOf(x, 3);
 console.log("test finished");
 
-var modules = [ "merge" ];
+var modules = [ "mergeTheirsToOurs" ];
 for(let i in modules) {
   let module = require("./" + modules[i]);
   for(let j in module) {
@@ -20,13 +20,13 @@ var theirs = {
   items: {
     "id1": {
       _id: "id1",
-      value1: "hoge",
-      value2: "fuga",
+      value1: "their hoge",
+      value2: "their fuga",
     }// id1
   },
   rejectedBy: {},
   rejecting: {},
-  mergedWith: {}
+  mergedInto: {}
 };
 var theirsStringified = JSON.stringify(theirs);
 
@@ -34,13 +34,18 @@ var ours = {
   items: {
     "id1": {
       _id: "id1",
+      value1: "our hoge",
+      value2: "our fuga",
+    },// id1
+    "id2": {
+      _id: "id2",
       value1: "hoge",
       value2: "fuga",
-    }// id1
+    },// id1
   },
   rejectedBy: {},
   rejecting: {},
-  mergedWith: {}
+  mergedInto: {}
 };
 var oursStringified = JSON.stringify(ours);
 
@@ -54,9 +59,9 @@ function rejectingMerger(theirItem, ourItem, mergedItem) {
 
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
-merge(theirs, ours, rejectingMerger);
-console.log(ours);
-console.log(theirs);
+mergeTheirsToOurs(theirs, ours, rejectingMerger);
+console.log("ours = " + JSON.stringify(ours));
+console.log("theirs = " + JSON.stringify(theirs));
 
 function submissiveMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
@@ -71,7 +76,7 @@ function submissiveMerger(theirItem, ourItem, mergedItem) {
 
 var theirs = JSON.parse(theirsStringified);
 var ours = JSON.parse(oursStringified);
-merge(theirs, ours, submissiveMerger);
-console.log(ours);
-console.log(theirs);
+mergeTheirsToOurs(theirs, ours, submissiveMerger);
+console.log("ours = " + JSON.stringify(ours));
+console.log("theirs = " + JSON.stringify(theirs));
 

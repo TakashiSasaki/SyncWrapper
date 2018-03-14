@@ -1,6 +1,6 @@
 assert = require("./HashWrapper/myassert").assert;
 
-function merge(theirs, ours, merger) {
+function mergeTheirsToOurs(theirs, ours, merger) {
   assert.lengthOf(arguments, 3);
   this.merger = merger;
   assert.isFunction(merger);
@@ -9,8 +9,8 @@ function merge(theirs, ours, merger) {
   assert.isObject(theirs.items);
   assert.hasProperty(theirs, "rejectedBy");
   assert.isObject(theirs.rejectedBy);
-  assert.hasProperty(theirs, "mergedWith");
-  assert.isObject(theirs.mergedWith);
+  assert.hasProperty(theirs, "mergedInto");
+  assert.isObject(theirs.mergedInto);
   assert.hasProperty(theirs, "rejecting");
   assert.isObject(theirs.rejecting);
   assert.isObject(ours);
@@ -18,8 +18,8 @@ function merge(theirs, ours, merger) {
   assert.isObject(ours.items);
   assert.hasProperty(ours, "rejectedBy");
   assert.isObject(ours.rejectedBy);
-  assert.hasProperty(ours, "mergedWith");
-  assert.isObject(ours.mergedWith)
+  assert.hasProperty(ours, "mergedInto");
+  assert.isObject(ours.mergedInto)
   assert.hasProperty(ours, "rejecting");
   assert.isObject(ours.rejecting);
 
@@ -36,6 +36,7 @@ function merge(theirs, ours, merger) {
 
     if(typeof ourItem === "undefined") {
       ours.items[_id] = theirItem;
+      delete theirs.items[_id];
       continue;
     }//if
 
@@ -44,18 +45,25 @@ function merge(theirs, ours, merger) {
 
     if(mergeResult < 0) { // merge failed
       ours.rejecting[_id] = theirItem;
+      delete theirs.items[_id];
       theirs.rejectedBy[_id] = ourItem;
       continue;
     }
 
     if(mergeResult > 0) { // merge succeeded
-      theirs.mergedWith[_id] = ourItem;
+      assert.hasProperty(mergedItem, "_id");
+      theirs.mergedInto[_id] = mergedItem;
       ours.items[_id] = mergedItem;
+      delete theirs.items[_id];
       continue;
     }
+
+    if(mergeResult === 0) {
+      delete thiers.items[_id]; 
+    }
   }//for i
-}//function merge
+}//function mergeTheirsToOurs
 
 if(typeof exports === "undefined") exports = {};
-exports.merge = merge;
+exports.mergeTheirsToOurs = mergeTheirsToOurs;
 
