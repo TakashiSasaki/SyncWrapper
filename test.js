@@ -52,7 +52,11 @@ function rejectingMerger(theirItem, ourItem, mergedItem) {
   return -1;
 }//function rejectingMerger
 
-merge(JSON.parse(theirsStringified), JSON.parse(oursStringified), rejectingMerger);
+var theirs = JSON.parse(theirsStringified);
+var ours = JSON.parse(oursStringified);
+merge(theirs, ours, rejectingMerger);
+console.log(ours);
+console.log(theirs);
 
 function submissiveMerger(theirItem, ourItem, mergedItem) {
   assert.isObject(theirItem);
@@ -65,5 +69,9 @@ function submissiveMerger(theirItem, ourItem, mergedItem) {
   return 1;
 }//function rejectingMerger
 
-merge(JSON.parse(theirsStringified), JSON.parse(oursStringified), submissiveMerger);
+var theirs = JSON.parse(theirsStringified);
+var ours = JSON.parse(oursStringified);
+merge(theirs, ours, submissiveMerger);
+console.log(ours);
+console.log(theirs);
 
