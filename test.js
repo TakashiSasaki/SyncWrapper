@@ -28,9 +28,10 @@ var theirs = {
       value2: "fuga",
     },// idOnlyInTheirs
   },
-  rejectedBy: {},
-  rejecting: {},
-  mergedTo: {}
+  rejectedBy: {}, //set by us as the result of merging
+  mergedTo: {},   //set by us as the result of merging
+  rejecting: {},  //We don't care
+  mergedWith: {}, //provided by them. We don't care it.
 };
 Object.preventExtensions(theirs);
 const theirsStringified = JSON.stringify(theirs);
@@ -53,9 +54,10 @@ var ours = {
       value2: "fuga",
     },// idOnlyInOurs
   },
-  rejectedBy: {},
-  rejecting: {},
-  mergedTo: {}
+  rejectedBy: {},   //We don't care
+  mergedTo: {},     //We don't care
+  rejecting: {},    //set by us as the result of merging
+  mergedWith: {},   //We don't care
 };
 Object.preventExtensions(ours);
 const oursStringified = JSON.stringify(ours);
@@ -68,10 +70,10 @@ function testRejectingMerger(){
   mergeTheirsToOurs(theirs, ours, rejectingMerger);
   console.log(JSON.stringify(theirs));
   var expectedTheirsStringified =
-  '{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{}}';
+  '{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{},"mergedWith":{}}';
   console.log(JSON.stringify(ours));
   var expectedOursStringified = 
-  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{}}';
+  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{},"mergedWith":{}}';
   assert.deepStrictEqual(theirs, JSON.parse(expectedTheirsStringified));
   assert.deepStrictEqual(ours, JSON.parse(expectedOursStringified));
 }
@@ -82,11 +84,11 @@ function testSubmissiveMerger(){
   mergeTheirsToOurs(theirs, ours, submissiveMerger);
   console.log(JSON.stringify(theirs));
   var expectedTheirsStringified =
-  '{"items":{},"rejectedBy":{},"rejecting":{},"mergedTo":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}}}';
+  '{"items":{},"rejectedBy":{},"rejecting":{},"mergedTo":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedWith":{}}';
   assert.deepStrictEqual(theirs, JSON.parse(expectedTheirsStringified));
   console.log(JSON.stringify(ours));
   var expectedOursStringified = 
-  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{},"mergedTo":{}}';
+  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{},"mergedTo":{},"mergedWith":{}}';
   assert.deepStrictEqual(ours, JSON.parse(expectedOursStringified));
 }
 
@@ -96,11 +98,11 @@ function testDefaultMerger(){
   mergeTheirsToOurs(theirs, ours, defaultMerger);
   console.log(JSON.stringify(theirs));
   var expectedTheirsStringified = 
-  '{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{}}';
+  '{"items":{},"rejectedBy":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"}},"rejecting":{},"mergedTo":{},"mergedWith":{}}';
   assert(theirs, JSON.parse(expectedTheirsStringified));
   console.log(JSON.stringify(ours));
   var expectedOursStringified =
-  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{}}';
+  '{"items":{"idInBoth1":{"_id":"idInBoth1","value1":"ourValue1","value2":"ourValue2"},"idInBoth2":{"_id":"idInBoth2","value1":"hogeInBoth","value2":"fugaInBoth","_dirty":false},"idOnlyInOurs":{"_id":"idOnlyInOurs","value1":"hoge","value2":"fuga"},"idOnlyInTheirs":{"_id":"idOnlyInTheirs","value1":"hoge","value2":"fuga","_dirty":false}},"rejectedBy":{},"rejecting":{"idInBoth1":{"_id":"idInBoth1","value1":"theirValue1","value2":"theirValue2"}},"mergedTo":{},"mergedWith":{}}';
   assert(ours, JSON.parse(expectedOursStringified));
 }
 
